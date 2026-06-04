@@ -97,11 +97,35 @@
     button:active{ transform:translateY(1px); }
     button:disabled{ opacity:.6; cursor:not-allowed; }
 
+    .hidden {
+      display: none;
+    }
+
     .note{
       margin:10px 0 0;
       color:var(--muted);
       font-size:0.9rem;
       line-height:1.3;
+    }
+
+    .status {
+      margin: 12px auto 0;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .status.success {
+      background: #dcfce7;
+      color: #166534;
+      border: 1px solid #86efac;
+    }
+
+    .status.error {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fca5a5;
     }
 
     /* small screens: slightly increase spacing */
@@ -127,13 +151,16 @@
       <button type="submit" id="submitBtn">Suscribirse</button>
     </form>
 
+    <div id="statusMessage" class="status hidden"></div>
+
     <p class="note">Tu correo electrónico se almacenará únicamente para poder enviar los emails.</p>
   </main>
 
   <script>
-    const form = document.getElementById('subscribeForm');
-    const email = document.getElementById('email');
     const btn = document.getElementById('submitBtn');
+    const email = document.getElementById('email');
+    const form = document.getElementById('subscribeForm');
+    const statusMessage = document.getElementById('statusMessage');
 
     const ENDPOINT = "https://j729r7u7gl.execute-api.eu-south-2.amazonaws.com/subscribe"
 
@@ -142,7 +169,7 @@
 
       const value = email.value.trim();
       if (!value) {
-        alert('Por favor ingresa un correo electrónico.');
+        showStatus('Por favor ingresa un correo electrónico.', 'error');
         email.focus();
         return;
       }
@@ -150,7 +177,7 @@
       // Basic email pattern check
       const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!re.test(value)) {
-        alert('Ingresa un correo válido.');
+        showStatus('Por favor ingresa un correo válido.', 'error');
         email.focus();
         return;
       }
@@ -177,16 +204,24 @@
             responseText || `Error ${response.status}`
           );
         }
-        alert('¡Gracias! Tu suscripción ha sido recibida.');
+        showStatus('¡Gracias! Te llegará un email para activar la suscripción 👍. Por favor revisa la carpeta de spam.', 'success');
         form.reset();
       } catch (error) {
         console.error('Subscription error:', error);
-        alert('No se pudo completar la suscripción. Por favor inténtalo de nuevo más tarde.');
+        showStatus(
+          'No se pudo completar la suscripción. Por favor inténtalo de nuevo más tarde.',
+          'error'
+        );
       } finally {
         btn.disabled = false;
         btn.textContent = originalText;
       }
     });
+
+    function showStatus(message, type) {
+      statusMessage.textContent = message;
+      statusMessage.className = `status ${type}`;
+    }
   </script>
 </body>
 </html>
