@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Chiste diario - Confirmación</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="container" role="main" aria-labelledby="title">
+    <h1 id="title">¡Estás a un clic de recibir los mejores chistes!</h1>
+
+    <p class="lead">
+      Solamente queda confirmar tu suscripción; para ello por favor haz clic en el siguiente botón 👇.
+    </p>
+    <p class="lead">
+      Recibirás un chiste a primera hora de lunes a viernes. ¡Para comenzar el día con energía! 🔋
+    </p>
+    <p class="lead">
+      Podrás darte de baja cuando quieras. 😉
+    </p>
+
+    <form id="confirmForm" action="#" method="post">
+      <button type="submit" id="submitBtn">Confirmar suscripción</button>
+    </form>
+
+    <div id="statusMessage" class="status hidden"></div>
+  </main>
+
+  <script>
+    const btn = document.getElementById('submitBtn');
+    const form = document.getElementById('confirmForm');
+    const statusMessage = document.getElementById('statusMessage');
+
+    const ENDPOINT = "https://j729r7u7gl.execute-api.eu-south-2.amazonaws.com/confirm";
+    const ERROR_TEXT = "No se pudo confirmar la suscripción. Por favor inténtalo de nuevo más tarde.";
+
+    const params = new URLSearchParams(window.location.search);
+    const email = params.get("email");
+    const token = params.get("token");
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (!email) {
+        console.error("URL without email");
+        showStatus(ERROR_TEXT, "error");
+        return;
+      }
+
+      if (!token) {
+        console.error("URL without token");
+        showStatus(ERROR_TEXT, "error");
+        return;
+      }
+
+      btn.disabled = true;
+      const originalText = btn.textContent;
+      btn.textContent = "Procesando...";
+
+      try {
+        const response = await fetch(ENDPOINT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            email: email,
+            token: token
+          })
+        });
+
+        const responseText = await response.text();
+
+        if (!response.ok) {
+          throw new Error(responseText || `Error ${response.status}`);
+        }
+
+        showStatus("¡Suscripción confirmada! Empezarás a recibir el chiste diario.", "success");
+        form.classList.add("hidden");
+      } catch (error) {
+        console.error("Confirmation error:", error);
+        showStatus(ERROR_TEXT, "error");
+        btn.disabled = false;
+        btn.textContent = originalText;
+      }
+    });
+
+    function showStatus(message, type) {
+      statusMessage.textContent = message;
+      statusMessage.className = `status ${type}`;
+    }
+  </script>
+</body>
+</html>

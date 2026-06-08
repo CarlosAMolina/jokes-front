@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Chiste diario - Baja</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="danger-page">
+  <main class="container" role="main" aria-labelledby="title">
+    <h1 id="title">¿Quieres darte de baja?</h1>
+
+    <p class="lead">
+      Dejarás de recibir el chiste diario. 🙈
+    </p>
+    <p class="lead">
+      Podrás volver a suscribirte cuando quieras. 😉
+    </p>
+    <form id="unsubscribeForm" action="#" method="post">
+      <button type="submit" id="submitBtn">Darme de baja</button>
+    </form>
+
+    <div id="statusMessage" class="status hidden"></div>
+  </main>
+
+  <script>
+    const btn = document.getElementById('submitBtn');
+    const form = document.getElementById('unsubscribeForm');
+    const statusMessage = document.getElementById('statusMessage');
+
+    const ENDPOINT = "https://j729r7u7gl.execute-api.eu-south-2.amazonaws.com/unsubscribe";
+    const ERROR_TEXT = "No se pudo completar la baja. Por favor inténtalo de nuevo más tarde.";
+
+    const params = new URLSearchParams(window.location.search);
+    const email = params.get("email");
+    const token = params.get("token");
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (!email) {
+        console.error("URL without email");
+        showStatus(ERROR_TEXT, "error");
+        return;
+      }
+      if (!token) {
+        console.error("URL without token");
+        showStatus(ERROR_TEXT, "error");
+        return;
+      }
+
+      btn.disabled = true;
+      const originalText = btn.textContent;
+      btn.textContent = "Procesando...";
+
+      try {
+        const response = await fetch(ENDPOINT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            email: email,
+            token: token
+          })
+        });
+
+        const responseText = await response.text();
+
+        if (!response.ok) {
+          throw new Error(responseText || `Error ${response.status}`);
+        }
+
+        showStatus("Te has dado de baja correctamente. ¡Hasta pronto!", "success");
+        form.classList.add("hidden");
+      } catch (error) {
+        console.error("Unsubscribe error:", error);
+        showStatus(ERROR_TEXT, "error");
+        btn.textContent = originalText;
+      }
+    });
+
+    function showStatus(message, type) {
+      statusMessage.textContent = message;
+      statusMessage.className = `status ${type}`;
+    }
+  </script>
+</body>
+</html>
