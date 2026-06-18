@@ -8,13 +8,13 @@
 </head>
 <body class="danger-page">
   <main class="container" role="main" aria-labelledby="title">
-    <h1 id="title">¿Quieres darte de baja?</h1>
+    <h1 id="title">¿Seguro que quieres darte de baja?</h1>
 
     <p class="lead">
-      Dejarás de recibir el chiste diario. 🙈
+      Dejarás de recibir tu chiste diario. 🙈
     </p>
     <p class="lead">
-      Podrás volver a suscribirte cuando quieras. 😉
+      Puedes volver cuando quieras. 😉
     </p>
     <form id="unsubscribeForm" action="#" method="post">
       <button type="submit" id="submitBtn">Darme de baja</button>
@@ -72,7 +72,7 @@
           throw new Error(responseText || `Error ${response.status}`);
         }
 
-        showStatus("Te has dado de baja correctamente. ¡Hasta pronto!", "success");
+        showStatus("Te has dado de baja. ¡Hasta pronto!", "success");
         form.classList.add("hidden");
       } catch (error) {
         console.error("Unsubscribe error:", error);
