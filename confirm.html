@@ -77,7 +77,7 @@
           throw new Error(responseText || `Error ${response.status}`);
         }
 
-        showStatus("¡Hecho! Acabo de enviarte un email confirmando la suscripción. 👍", "success");
+        showStatus("¡Hecho! Acabo de enviarte un email confirmando la suscripción 👍. Por favor revisa tu carpeta de spam.", "success");
         form.classList.add("hidden");
       } catch (error) {
         console.error("Confirmation error:", error);
