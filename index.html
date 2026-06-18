@@ -33,6 +33,7 @@
     const ENDPOINT = "https://j729r7u7gl.execute-api.eu-south-2.amazonaws.com/jokes";
 
     form.addEventListener('submit', async (e) => {
+      statusMessage.className = 'status hidden';
       e.preventDefault();
 
       const value = email.value.trim();
